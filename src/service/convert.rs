@@ -60,9 +60,8 @@ pub fn proto_to_mode(mode: proto::GameMode) -> Option<GameMode> {
 
 pub fn proto_to_priority(priority: proto::HitResultPriority) -> HitResultPriority {
     match priority {
-        proto::HitResultPriority::BestCase => HitResultPriority::BestCase,
+        proto::HitResultPriority::BestCase | proto::HitResultPriority::Fastest => HitResultPriority::BestCase,
         proto::HitResultPriority::WorstCase => HitResultPriority::WorstCase,
-        proto::HitResultPriority::Fastest => HitResultPriority::Fastest,
     }
 }
 
@@ -263,11 +262,11 @@ fn taiko_diff(a: TaikoDifficultyAttributes) -> proto::TaikoDifficultyAttributes 
 
 fn catch_diff(a: CatchDifficultyAttributes) -> proto::CatchDifficultyAttributes {
     proto::CatchDifficultyAttributes {
-        ar: a.ar,
         n_fruits: a.n_fruits,
         n_droplets: a.n_droplets,
         n_tiny_droplets: a.n_tiny_droplets,
         is_convert: a.is_convert,
+        ..Default::default()
     }
 }
 
@@ -296,8 +295,8 @@ fn taiko_perf(a: TaikoPerformanceAttributes) -> proto::TaikoPerformanceAttribute
         difficulty: Some(taiko_diff(a.difficulty)),
         pp_acc: a.pp_acc,
         pp_difficulty: a.pp_difficulty,
-        effective_miss_count: a.effective_miss_count,
         estimated_unstable_rate: a.estimated_unstable_rate,
+        ..Default::default()
     }
 }
 

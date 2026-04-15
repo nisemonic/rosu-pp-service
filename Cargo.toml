@@ -8,8 +8,8 @@ license = "MIT"
 repository = "https://github.com/nisemonic/rosu-pp-service"
 
 [dependencies]
-rosu-pp = { git = "https://github.com/MaxOhn/rosu-pp", branch = "next" }
-rosu-mods = "0.3"
+rosu-pp = { git = "https://github.com/MaxOhn/rosu-pp", branch = "main" }
+rosu-mods = "0.4"
 lru = "0.14"
 parking_lot = "0.12"
 rayon = "1.10"
