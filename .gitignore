@@ -1,0 +1,26 @@
+# Build
+target/
+
+# Environment
+.env
+.env.*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test data
+*.osu
+beatmaps/
+*.tar.bz2
+
+# Logs
+*.log
+rosu-pp-lib/

@@ -1,0 +1,28 @@
+services:
+  app:
+    build: .
+    ports:
+      - "50051:50051"
+    volumes:
+      - ./beatmaps:/beatmaps:ro
+    environment:
+      RUST_LOG: info
+      PP_SERVICE_LOG_FORMAT: json
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    depends_on:
+      - app
+    volumes:
+      - ./beatmaps:/app/beatmaps:ro
+    environment:
+      GRPC_ADDR: http://app:50051
+    profiles:
+      - test

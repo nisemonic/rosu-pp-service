@@ -1,0 +1,60 @@
+[package]
+name = "rosu-pp-service"
+version = "0.1.0"
+edition = "2021"
+authors = ["nisemonic"]
+description = "High-performance gRPC service for osu! PP calculations"
+license = "MIT"
+repository = "https://github.com/nisemonic/rosu-pp-service"
+
+[dependencies]
+rosu-pp = { git = "https://github.com/MaxOhn/rosu-pp", branch = "next" }
+rosu-mods = "0.3"
+lru = "0.14"
+parking_lot = "0.12"
+rayon = "1.10"
+
+tokio = { version = "1", features = ["rt-multi-thread", "net", "signal", "macros", "sync"] }
+tokio-stream = "0.1"
+tonic = "0.12"
+prost = "0.13"
+
+axum = "0.7"
+tower = "0.5"
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+
+thiserror = "2"
+anyhow = "1"
+dotenvy = "0.15"
+
+# Graph rendering
+plotters = { version = "0.3", default-features = false, features = ["ttf", "line_series", "area_series"] }
+plotters-backend = "0.3"
+plotters-skia = { git = "https://github.com/MaxOhn/plotters-skia", branch = "main" }
+skia-safe = "0.81"
+enterpolation = { version = "0.2", default-features = false, features = ["std", "linear"] }
+image = { version = "0.24", default-features = false, features = ["png"] }
+
+[build-dependencies]
+tonic-build = { version = "0.12", features = ["prost"] }
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true
+
+[lints.rust]
+unsafe_code = "deny"
+
+[lints.clippy]
+all = "warn"
+pedantic = "warn"
+nursery = "warn"

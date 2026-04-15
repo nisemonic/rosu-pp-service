@@ -1,0 +1,115 @@
+# Example nginx configuration for rosu-pp-service
+# Supports both gRPC and HTTP endpoints on the same upstream
+
+upstream rosu_pp_backend {
+    server 127.0.0.1:50051;
+    keepalive 32;
+}
+
+# HTTP server (health checks, docs)
+server {
+    listen 80;
+    server_name pp.example.com;
+
+    # Redirect to HTTPS in production
+    # return 301 https://$server_name$request_uri;
+
+    location / {
+        proxy_pass http://rosu_pp_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Connection "";
+
+        # Timeouts
+        proxy_connect_timeout 10s;
+        proxy_read_timeout 30s;
+        proxy_send_timeout 30s;
+    }
+
+    # Health check endpoints
+    location /health {
+        proxy_pass http://rosu_pp_backend/health;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+    }
+
+    location /ready {
+        proxy_pass http://rosu_pp_backend/ready;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+    }
+
+    location /live {
+        proxy_pass http://rosu_pp_backend/live;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+    }
+}
+
+# gRPC server (requires HTTP/2)
+server {
+    listen 443 http2 ssl;
+    server_name grpc.pp.example.com;
+
+    ssl_certificate /etc/nginx/ssl/cert.pem;
+    ssl_certificate_key /etc/nginx/ssl/key.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    # gRPC endpoints
+    location /pp.v1.PerformanceService {
+        grpc_pass grpc://rosu_pp_backend;
+
+        # Timeouts for long-running streams (gradual difficulty/performance)
+        grpc_read_timeout 300s;
+        grpc_send_timeout 300s;
+
+        # Error handling
+        error_page 502 = /error502grpc;
+    }
+
+    location = /error502grpc {
+        internal;
+        default_type application/grpc;
+        add_header grpc-status 14;
+        add_header grpc-message "upstream unavailable";
+        return 204;
+    }
+}
+
+# Alternative: Single server for both HTTP and gRPC (plaintext, for internal use)
+server {
+    listen 8080 http2;
+    server_name localhost;
+
+    # HTTP endpoints
+    location /health {
+        proxy_pass http://rosu_pp_backend/health;
+        proxy_http_version 1.1;
+    }
+
+    location /ready {
+        proxy_pass http://rosu_pp_backend/ready;
+        proxy_http_version 1.1;
+    }
+
+    location /live {
+        proxy_pass http://rosu_pp_backend/live;
+        proxy_http_version 1.1;
+    }
+
+    location /docs {
+        proxy_pass http://rosu_pp_backend/docs;
+        proxy_http_version 1.1;
+    }
+
+    # gRPC (plaintext)
+    location /pp.v1.PerformanceService {
+        grpc_pass grpc://rosu_pp_backend;
+        grpc_read_timeout 300s;
+        grpc_send_timeout 300s;
+    }
+}
