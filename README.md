@@ -2,7 +2,7 @@
 
 High-performance gRPC service for osu! performance points (PP) and star rating (SR) calculations.
 
-Built on [rosu-pp](https://github.com/MaxOhn/rosu-pp) v3.1.
+Built on [rosu-pp](https://github.com/MaxOhn/rosu-pp) v4.0.1.
 
 ## Features
 
@@ -12,7 +12,7 @@ Built on [rosu-pp](https://github.com/MaxOhn/rosu-pp) v3.1.
 - **Beatmap caching** with LRU eviction
 - **Lazer & stable** scoring modes
 - **Custom difficulty settings** (AR, CS, OD, HP overrides)
-- **Mod support** via bitflags
+- **Mod support** via bitflags and acronyms (including lazer mods)
 
 ## Quick Start
 
